@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import joblib
 from sklearn.base import BaseEstimator, TransformerMixin
-
+from sklearn.tree import DecisionTreeClassifier
 
 class SentenceLengthExtractor(BaseEstimator, TransformerMixin):
 
@@ -90,7 +90,7 @@ def build_model():
     pipeline = Pipeline([
                 ('c_vect', CountVectorizer(tokenizer=tokenize)),
                 ('c_tfidf_trans', TfidfTransformer()),
-                ('c_clf_adabost', MultiOutputClassifier(AdaBoostClassifier()))
+                ('c_clf_adabost', MultiOutputClassifier(AdaBoostClassifier(DecisionTreeClassifier(max_depth = 1))))
 
         ])
 
@@ -108,9 +108,11 @@ def evaluate_model(model, X_test, Y_test, category_names):
     :return: None
     """
     y_pred = model.predict(X_test)
-    for l, pred, c in zip(Y_test.values.transpose(), y_pred.transpose(),category_names):
-        print(c)
-        print(classification_report(l, pred))
+    Y_test_vals = Y_test.values.transpose()
+    Y_pred_vals = y_pred.transpose()
+    for l, p, c in zip(Y_test_vals, Y_pred_vals,category_names):
+        print("Category Name: ",c)
+        print(classification_report(l, p))
     accuracy = ((Y_test == y_pred).mean()).values.mean()
     print("Overall Accuracy: ",accuracy)
 
