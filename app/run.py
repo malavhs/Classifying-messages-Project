@@ -71,7 +71,6 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     X = df['message']
     y = df.iloc[:, 4:]
     X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2, random_state=42)
