@@ -17,6 +17,8 @@ from sklearn.metrics import classification_report
 import joblib
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import GridSearchCV
+
 
 class SentenceLengthExtractor(BaseEstimator, TransformerMixin):
 
@@ -93,9 +95,13 @@ def build_model():
                 ('c_clf_adabost', MultiOutputClassifier(AdaBoostClassifier(DecisionTreeClassifier(max_depth = 1))))
 
         ])
+    parameters = {
+        'c_clf_adabost__estimator__base_estimator__max_depth': [1],
+        'c_clf_adabost__estimator__base_estimator__min_samples_leaf': [1, 2, 3]
+    }
+    cv = GridSearchCV(estimator=pipeline, param_grid=parameters, cv=3)
 
-
-    return pipeline
+    return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
     """
@@ -140,6 +146,9 @@ def main():
 
         print('Training model...')
         model.fit(X_train, Y_train)
+
+        print('Best Model parameters: ')
+        print (model.best_params_)
 
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)

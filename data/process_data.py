@@ -33,8 +33,8 @@ def clean_data(df):
     categories = df['categories'].str.split(';', expand=True)
     row = categories.iloc[0]
     category_colnames = []
-    for i in row:
-        category_colnames.append(i[:-2])
+    for col_name in row:
+        category_colnames.append(col_name[:-2])
     categories.columns = category_colnames
     for column in categories:
         # set each value to be the last character of the string
@@ -48,6 +48,9 @@ def clean_data(df):
 
     #Concat new categorical columns with dataframe
     df = pd.concat([df, categories], axis=1)
+
+    # Drop rows that are 2 in the related column
+    df = df[df.related != 2]
 
     #Drop duplicates
     df = df.drop_duplicates()
@@ -63,7 +66,7 @@ def save_data(df, database_filename):
     :return: None
     """
     engine = create_engine('sqlite:///'+database_filename)
-    df.to_sql('test_table_5', engine, index=False)
+    df.to_sql('test_table_5', engine, index=False, if_exists='replace')
 
 
 def main():
@@ -88,7 +91,7 @@ def main():
               'well as the filepath of the database to save the cleaned data '\
               'to as the third argument. \n\nExample: python process_data.py '\
               'disaster_messages.csv disaster_categories.csv '\
-              'DisasterResponse.db')
+              'DisasterR.db')
 
 
 if __name__ == '__main__':
